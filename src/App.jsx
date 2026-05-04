@@ -117,6 +117,31 @@ function App() {
   }, []);
 
   // SPEAK TEXT
+  const speakWithBrowser = (textToSay) => {
+    if (!window.speechSynthesis) return;
+
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(textToSay);
+    utterance.lang = "en-IN";
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    utterance.onstart = () => {
+      setIsTalking(true);
+    };
+
+    utterance.onend = () => {
+      setIsTalking(false);
+    };
+
+    utterance.onerror = () => {
+      setIsTalking(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   const speakText = async (textToSay) => {
     try {
       const response = await axios.post(
@@ -143,8 +168,8 @@ function App() {
 
       audio.play();
     } catch (error) {
-      console.error(error);
-      setIsTalking(false);
+      console.warn("Backend voice unavailable, using browser voice.", error);
+      speakWithBrowser(textToSay);
     }
   };
 
