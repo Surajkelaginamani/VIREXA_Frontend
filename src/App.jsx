@@ -20,7 +20,17 @@ import AnimatedGeminiBot from "./components/AnimatedGeminiBot";
 // IMPORT YOUR VIREXA LOGO
 import virexaLogo from "./assets/virexa-logo.png";
 
-const API_BASE_URL = "https://virexa-backend.onrender.com/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://virexa-backend.onrender.com/api";
+
+const getApiErrorMessage = (error, fallback) => {
+  if (error.response?.status === 503) {
+    return "Backend database is not connected. Please check Render environment variables.";
+  }
+
+  return error.response?.data?.error || fallback;
+};
 
 function App() {
   const [input, setInput] = useState("");
@@ -63,14 +73,33 @@ function App() {
       setConversations(response.data.conversations || []);
     } catch (error) {
       console.error(error);
-      setHistoryError("Could not load chats");
+      setHistoryError(
+        getApiErrorMessage(error, "Could not load chats")
+      );
     } finally {
       setIsLoadingChats(false);
     }
   };
 
   useEffect(() => {
-    fetchConversations();
+    const loadConversations = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/chat/conversations`
+        );
+
+        setConversations(response.data.conversations || []);
+      } catch (error) {
+        console.error(error);
+        setHistoryError(
+          getApiErrorMessage(error, "Could not load chats")
+        );
+      } finally {
+        setIsLoadingChats(false);
+      }
+    };
+
+    loadConversations();
   }, []);
 
   // SPEECH RECOGNITION
@@ -201,7 +230,10 @@ function App() {
         ...newMessages,
         {
           role: "bot",
-          text: "Server connection failed.",
+          text: getApiErrorMessage(
+            error,
+            "Server connection failed."
+          ),
         },
       ]);
     }
@@ -223,7 +255,9 @@ function App() {
       setMessages(response.data.messages || []);
     } catch (error) {
       console.error(error);
-      setHistoryError("Could not open chat");
+      setHistoryError(
+        getApiErrorMessage(error, "Could not open chat")
+      );
     }
   };
 
@@ -246,7 +280,9 @@ function App() {
 
       setActiveConversationId(null);
 
-      setHistoryError("Could not start chat");
+      setHistoryError(
+        getApiErrorMessage(error, "Could not start chat")
+      );
     }
   };
 
