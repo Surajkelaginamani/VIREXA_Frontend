@@ -1,0 +1,56 @@
+.message-bubble {
+  overflow-wrap: anywhere;
+}
+
+.bot-bubble {
+  width: fit-content;
+}
+
+.bot-message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bot-paragraph,
+.bot-bullet {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.bot-bullet::before {
+  content: "•";
+  margin-right: 8px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: #fff;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid #d8dee4;
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.schedule-table th {
+  background: #f1f5f9;
+  color: #111827;
+  font-weight: 700;
+}
+
+.schedule-table tr:nth-child(even) td {
+  background: #f8fafc;
+}
