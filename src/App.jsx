@@ -113,64 +113,33 @@ function App() {
     recognition.current = new SpeechRecognition();
 
     recognition.current.continuous = false;
-    recognition.current.lang = "en-IN";
+    recognition.current.lang = "hi-IN";
   }, []);
 
   // SPEAK TEXT
-  const speakWithBrowser = (textToSay) => {
+  const speakText = (textToSay) => {
     if (!window.speechSynthesis) return;
 
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(textToSay);
-    utterance.lang = "en-IN";
-    utterance.rate = 1;
-    utterance.pitch = 1;
+    const speech = new SpeechSynthesisUtterance(textToSay);
+    speech.lang = "hi-IN";
+    speech.rate = 1;
+    speech.pitch = 1;
 
-    utterance.onstart = () => {
+    speech.onstart = () => {
       setIsTalking(true);
     };
 
-    utterance.onend = () => {
+    speech.onend = () => {
       setIsTalking(false);
     };
 
-    utterance.onerror = () => {
+    speech.onerror = () => {
       setIsTalking(false);
     };
 
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const speakText = async (textToSay) => {
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/speak`,
-        {
-          text: textToSay,
-        },
-        {
-          responseType: "blob",
-        }
-      );
-
-      const audioUrl = URL.createObjectURL(response.data);
-
-      const audio = new Audio(audioUrl);
-
-      audio.onplay = () => {
-        setIsTalking(true);
-      };
-
-      audio.onended = () => {
-        setIsTalking(false);
-      };
-
-      audio.play();
-    } catch (error) {
-      console.warn("Backend voice unavailable, using browser voice.", error);
-      speakWithBrowser(textToSay);
-    }
+    window.speechSynthesis.speak(speech);
   };
 
   // MIC
